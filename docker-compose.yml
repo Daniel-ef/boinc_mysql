@@ -5,10 +5,10 @@ volumes:
 
 services:
   mysql:
-    image: boinc/server_mysql:$VERSION$TAG$DEFAULTARGS
+    image: boinc/server_mysql:latest
     build: 
       context: ./
-      target: mysql$DEFAULTARGS
+      target: mysql
     volumes:
       - "mysql:/var/lib/mysql"
     ports:
@@ -19,10 +19,14 @@ services:
         context: ./metricbeat
         args:
           - METRICBEAT_FILE=metricbeat.yml
+          - ELK_HOST=$ELK_HOST
+          - HOST_IP=$HOST_IP
       container_name: metricbeat
+      depends_on:
+        - mysql
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
       environment:
-        - "WAIT_FOR_HOSTS=172.31.44.103:9200 172.31.44.103:5601"
-        - "HOST_ELASTICSEARCH=172.31.44.103:9200"
-        - "HOST_KIBANA=172.31.44.103:5601"
+        - WAIT_FOR_HOSTS='${ELK_HOST}:9200 ${ELK_HOST}:5601'
+        - HOST_ELASTICSEARCH=$ELK_HOST:9200
+        - HOST_KIBANA=$ELK_HOST:5601
