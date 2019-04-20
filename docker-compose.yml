@@ -1,0 +1,28 @@
+version: "3.4"
+
+volumes:
+  mysql:
+
+services:
+  mysql:
+    image: boinc/server_mysql:$VERSION$TAG$DEFAULTARGS
+    build: 
+      context: ./
+      target: mysql$DEFAULTARGS
+    volumes:
+      - "mysql:/var/lib/mysql"
+    ports:
+      - "3306:3306"
+
+  metricbeat:
+      build:
+        context: ./metricbeat
+        args:
+          - METRICBEAT_FILE=metricbeat.yml
+      container_name: metricbeat
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+      environment:
+        - "WAIT_FOR_HOSTS=172.31.44.103:9200 172.31.44.103:5601"
+        - "HOST_ELASTICSEARCH=172.31.44.103:9200"
+        - "HOST_KIBANA=172.31.44.103:5601"

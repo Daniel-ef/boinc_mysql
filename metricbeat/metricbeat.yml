@@ -1,0 +1,23 @@
+metricbeat.modules:
+  - module: mysql
+    enabled: true
+    metricsets: ["status"]
+    period: 5s
+    hosts: ["root:password@tcp(172.31.38.165:3306)/"]
+
+output.elasticsearch:
+  hosts: ["172.31.44.103:9200"]
+    
+setup.kibana:
+  host: "172.31.44.103:5601"
+
+setup.dashboards.enabled: true
+
+logging.level: debug
+logging.to_files: true
+logging.to_syslog: false
+logging.files:
+  path: /var/log/metricbeat
+  name: metricbeat.log
+  keepfiles: 2
+  permissions: 0644
